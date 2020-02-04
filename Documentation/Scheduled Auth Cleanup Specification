@@ -1,0 +1,25 @@
+Scheduled Auth Cleanup Specification
+
+Background
+On 3-2-2019 removed automatic deletion of user during login, because this caused the user session to timeout after one hour, after which saves and loads of designs failed with "Saving design" spinner running.
+
+Ramification
+Now that user is not automatically deleted, a scheduled auto-cleanup cloud function must be implemented, because the Authentications list in Firebase grows continually.
+
+Requirements
+• Implement a Scheduled Cloud Function that runs hourly. This is now relatively easy because Google released Cloud Scheduling Nov 2018.
+• This function will iterate through the existing Logins database:
+    - if more than 1 hour old then delete the associated existing Autologin document;
+    - if more than 48 hours old then delete both the Login document AND the user authentication. After user is deleted, permission to load and save will expire after one hour.
+• Estimated monthly cost is minimal (details below).
+
+Cloud Scheduler Pricing Overview
+Cloud Scheduler pricing is based on the job. A Cloud Scheduler job defines a single activity scheduled to run at a frequency provided in the definition.
+
+The actual running of a job is called an execution. A job is not billed for individual executions. For instance, if a single job is defined to run for "every day of the month", then that job is billed $0.1/month and not $3/month for 30 executions of that single job.
+
+Cloud Pub/Sub Pricing Overview (https://cloud.google.com/pubsub/pricing)
+Each time the job is executed, it invokes Cloud Pub/Sub to call the function. Minimum volume for each Pub/Sub is 1KB. That should result in 720KB/month, which falls well within the free tier quota of 10GB.
+
+Cloud Function call price
+The actual execution of the called cloud function involves no data transfer, only modification of the Firestore database and Authentication. The cost should be minimal.

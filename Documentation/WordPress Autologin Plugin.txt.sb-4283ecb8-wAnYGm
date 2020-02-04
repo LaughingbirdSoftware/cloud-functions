@@ -1,0 +1,10 @@
+The wgc-autologin WordPress plugin consists of two files: a php file and a javascript file. 
+
+The JavaScript file (wgc-autologin.js) supports the use of foobox instances to launch the Web 
+Graphics Creator web app.
+
+1. A function runs automatically on the document "ready" event. This function modifies the href attribute of each foobox instance in the document, by adding the "site" and "key" search params. Each target foobox must already contain the "niche" parameter. This function also adds an "onclick" attribute to the foobox instance.
+
+2. A second function (handleAutoLoginClick) makes an AJAX call to wgc-autologin.php when the user clicks the target foobox instance. 
+
+wgc-autologin.php

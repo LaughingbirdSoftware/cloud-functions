@@ -1,0 +1,121 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671
+{\fonttbl\f0\fnil\fcharset0 .SFNSText-Bold;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fswiss\fcharset0 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red251\green2\blue7;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c14913\c0;}
+\margl1440\margr1440\vieww25100\viewh13560\viewkind0
+\deftab720
+\pard\pardeftab720\sl340\qc\partightenfactor0
+
+\f0\b\fs36 \cf2 \expnd0\expndtw0\kerning0
+Web Graphics Creator Autologin
+\f1 \cf0 \kerning1\expnd0\expndtw0  Documentation
+\f2\b0\fs28 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\qc\partightenfactor0
+\cf0 Chastain November 1, 2018\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b\fs32 \cf0 Overview
+\f2\b0\fs28 \
+Autologin utilizes code in three locations: a WordPress plugin, a Google Cloud Function, and the app.component.ts file in the hosted web app. \
+\
+When the user clicks a foobox launcher, the plugin and the cloud function create an Autologin document in the web app database, identified by a random key. \
+\
+Simultaneously, the foobox launches the web app in an iFrame and the app attempts to load an Autologin document with the same random key. \
+\
+If the document is found, the app launches. If the document is not found withing 20 seconds, the app reports a time out error.\
+\
+\
+
+\f1\b\fs32 Installation
+\f2\b0\fs28 \
+The Autologin plugin is a private, custom plugin and must be added or updated manually. In a work folder on your computer, decompress the wgc-autologin.zip file. Finally, FTP the new wgc-autologin folder to your WordPress plugins folder, over-writing if necessary. If you have not previously done so, Activate the plugin.\
+\
+You can use foobox HTML instances to launch the web app in an iFrame. Simply add a "niche" url parameter to the href attribute of each foobox.\
+\
+\
+
+\f1\b\fs32 Security
+\f2\b0\fs28 \
+The plugin PHP that invokes the Autologin Cloud Function is secure (\cf3 provided the server and SSL certificate are secure\cf0 ). This PHP verifies that the user has a valid DAP membership on a WordPress site. The PHP invokes the Cloud Function using an HTTPS (encrypted) POST containing membership info, a random launch key, and a hard-coded secret. When the Cloud Function is invoked, the Autologin document will be created in the app database ONLY if the hard-coded secret is verified. \
+\
+In brief, autologin will succeed only if (1) the user has a valid DAP membership, and (2) the Cloud Function is invoked from the plugin PHP. \
+\
+Therefore, to gain unauthorized access to the web app, a hacker would need to steal the PHP from the server.\
+\
+\cf3 WARNING: Anyone who is an Admininistrator of the WordPress site can access the plugin PHP source code.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b\fs32 \cf0 Cloud Function Invocation Quota
+\f2\b0\fs28 \
+The Autologin Cloud Function is publicly accessible and therefore vunerable to external attack. To prevent the possiblity of excessive access, I have reduced the Quota for invocations to 100 per 100 seconds (the default was several billion). This should be more than enough. Setting this quota provides information to Google Cloud that it can use to detect and block DDoS attacks. This quota also prevents the possibility of excessive billing could be cause by a DDoS attack.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs24 \cf0 {{\NeXTGraphic Screen Shot 2018-11-01 at 12.44.20 PM.png \width25600 \height16000 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}
+\fs28 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \
+\
+The remaining paragraphs explain Autologin in more detail:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b\fs32 \cf0 WordPress Plugin
+\f2\b0\fs28 \
+This plugin supports the use of foobox instances in a WordPress site to launch the Web Graphics Creator web app. Each foobox intended for app launch must include a "niche" search parameter in the href attribute. All other foobox instances on the site will be ignored by the plugin.\
+\
+The plugin works in conjunction with an Autologin Google Cloud Function, and with the app.component.ts file in the web app itself.\
+\
+The plugin consists of two files: a php file and a javascript file. \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b \cf0 JavaScript (wgc-autologin.js)
+\f2\b0 \
+1. One function runs automatically on the document "ready" event. This function modifies the href attribute of each foobox instance in the document, by adding the "site" and "key" search params.  Each "key" is a random string. Each target foobox must already contain the "niche" parameter. \
+\
+This function also adds an "onclick" attribute to the foobox instance.\
+\
+2. A second function (handleAutoLoginClick) makes an AJAX call to wgc-autologin.php when the user clicks the target foobox instance. \
+\
+
+\f1\b PHP (wgc-autologin.php)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+
+\f2\b0 \cf0 1. This php automatically enqueues the JavaScript (wgc-autologin.js) in accordance with WordPress guidelines, and enables AJAX with nonce security.\
+\
+2. When triggered by the handleAutoLoginClick AJAX call, this php first checks that a DAP session is active and that the user is logged in to DAP.\
+\
+3. Then, the user email is derived from DAP. This email is user to acquire the WordPress user ID and user Role. \
+\
+4. Finally, curl is used to make an SSL HTTP POST containing a hard-coded secret, the user name, role, ID, and the random key. The POST is sent to a Google Cloud Function for either the production (webgraphicscreator) or staging (tgc8-ae5bf) hosted Firebase site.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b\fs32 \cf0 Google Cloud Function
+\f2\b0\fs28 \
+Upon receipt of the POST request from the plugin PHP, an Autologin document is created in the web apps Firestore database, but only if the hard-coded secret matches the secret in the plugin PHP. The UID of the document is the random key, and the document contain the user name, ID, and role.\
+\
+
+\f1\b\fs32 Web Graphics Creator Web App
+\f2\b0\fs28 \
+Upon launch, the app will unpack the search parameters (niche, site, and key). \
+\
+The app will then attempt to get an Autologin document, where the UID matches the key, from the Firestore database.\
+\
+If successful, the app will read the user name, role, and ID, from the document. The ID and site are then used to create the userID for design storage (for instance, 34_webgraphicscreator). All of the user's data and files are then stored and accessed using this userID.\
+\
+The Autologin document is then immediately deleted, so that it cannot be used for unauthorized access of the app.\
+\
+If no matching Autologin document is found after 20 seconds, the user is given an appropriate error message, and the app will not be usable.\
+\
+ }

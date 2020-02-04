@@ -1,0 +1,4 @@
+PeggyBanks
+Michael Swancott
+
+var affId = <?php echo $user->getId(); ?>;
