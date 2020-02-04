@@ -1,0 +1,51 @@
+Autologin work log
+
+10-15-2018
+
+[x] Reactivate deleteTrialUser; rename it "deleteAnonymousAuth".
+
+10-16-2018
+
+[x] Add onclick="handleAutologinClick()" to all foobox instances in func_autologin.js "ready", so that Marc does not have to do it manually.
+
+TilesComponent:
+[x] Delete Autologin doc, after doc has be found, so that the key can no longer be used. 
+[x] Create Users doc with this.tms.site + "_" + email as uid. Transfer all fields from Autologin doc. Add two fields: key (uid (key) from Autologin doc); and timestamp.
+
+[x] Logging in as helpscout (which is admin) results in "Library" appearing twice in SetsComponent dropdown.
+
+[x] Remove console.log and echo from autologin code.
+
+10-17-2018
+
+[x] There are too many tries in autologin. Maybe need timeout?
+
+[0] See screenshot in same folder as this file. The is a NON-FATAL error during login involving wp-admin/admin-ajax. I'm concerned that this could corrupt the WordPress site in some way. ISSUE: Conflict with FooBox plugin. Must be a scope or focus issue. Maybe the AJAX response is not able to send the response after the iFrame is opened. RESOLUTION: Don't believe that this can cause any damage. Leave as is.
+
+[x] Remove email from autologin. That way there is no chance that a sniffer could grab it.
+
+[x] Key is added repeatedly to <a> repeatedly. 
+
+[x] Use plugin to add "site" to <a> tag.
+
+10-18-2018
+
+[x] Autologin doc is not being deleted if the user is not logged in.
+
+10-19-2018
+
+[x] wgc-autologin.php: Must condition for staging vs production environment.
+
+[x] Add time expiration in TilesComponent after, say 90 seconds, so it doesn't keep trying to find autologin doc forever. Need appropriate message.
+
+[x] Put wgc-autologin folder on webgraphicscreator.com. Activate.
+
+[x] Deploy Cloud Functions to webgraphicscreator.
+
+[x] Deploy app to webgraphicscreator.
+
+11-1-2018
+
+[x] Delete Autologin doc when login successful. -- nov 1 redeployed webgraphics creator.
+
+[ ] Change plugin so that each foobox has unique key. Need to move new js file to webgraphics creator and videoadmachine.
